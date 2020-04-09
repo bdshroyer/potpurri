@@ -27,15 +27,15 @@ conda activate $ENV_NAME
 
 echo "Installing/upgrading packages in environment $ENV_NAME..."
 
-conda install -y numpy
-conda install -y scipy
-conda install -y pandas
-conda install -y scikit-learn
-conda install -y networkx
-conda install -y matplotlib
-conda install -y seaborn
+conda install -y numpy \
+    scipy \
+    pandas \
+    scikit-learn \
+    networkx \
+    matplotlib \
+    seaborn \
+    jupyter
 
-conda install -y jupyter
 conda install -y -c conda-forge jupyter_contrib_nbextensions
 jupyter contrib nbextension install --user
 
