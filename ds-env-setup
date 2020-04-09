@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+
+ENV_NAME=$1
+CONDA_BASE=$(conda info --base)
+
+echo "ENV_NAME=$ENV_NAME"
+
+# If an environment exists under the given name, then skip the creation process.
+# I chose to do this so that this script could be extended without having to
+# burn down the environment every time.
+if [ -z $(conda env list | cut -d" " -f 1 | grep -x $ENV_NAME) ]; then
+    echo "Creating environment '$ENV_NAME'..."
+    conda update -y conda
+    conda create -y -n $ENV_NAME python=$PY_ENV
+else
+    echo "Environment already exists. Skipping creation."
+    echo "To rebuild this environment from scratch, first run \`conda env remove --name $ENV_NAME\`."
+fi
+
+echo -n "Sourcing conda setup..."
+source $(conda info --base)/etc/profile.d/conda.sh
+echo "done."
+
+
+conda activate $ENV_NAME
+
+echo "Installing/upgrading packages in environment $ENV_NAME..."
+
+conda install -y numpy
+conda install -y scipy
+conda install -y pandas
+conda install -y scikit-learn
+conda install -y networkx
+conda install -y matplotlib
+conda install -y seaborn
+
+conda install -y jupyter
+conda install -y -c conda-forge jupyter_contrib_nbextensions
+jupyter contrib nbextension install --user
+
+
+echo "Installation/upgrade for environment $ENV_NAME complete."
