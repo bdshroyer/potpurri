@@ -15,5 +15,9 @@ A Bash script for setting up and maintaining new Python environments using my pr
 
 A tool for automating installation and updates of Github-based Vim plugins.
 * *Motivation:* I was switching over to the Vim 8 plugin manager, and I figured I'd automate the installation and update of said plugins, since I'm almost never in the `.vim` directory and never think to do it.
-* *Requirements:* Python 3, Vim 8 (older versions don't have the native plugin manager), the [GitPython client](https://github.com/gitpython-developers/GitPython).
+* *Requirements:*
+  * Python 3
+  * Vim 8 (older versions don't have the native plugin manager)
+  * the [GitPython client](https://github.com/gitpython-developers/GitPython).
+  * The [PyYAML](https://pyyaml.org/wiki/PyYAMLDocumentation) library.
 * *Side Effects:* Installs new Vim plugins in a specified plugin directory.
