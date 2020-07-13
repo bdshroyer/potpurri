@@ -64,7 +64,9 @@ conda install -y numpy \
     seaborn \
     jupyter
 
-conda install -y -c conda-forge jupyter_contrib_nbextensions
+conda install -y -c conda-forge jupyter_contrib_nbextensions \
+    gitpython
+
 jupyter contrib nbextension install --user
 
 
