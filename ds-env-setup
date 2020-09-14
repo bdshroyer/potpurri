@@ -5,6 +5,7 @@ usage() {
     echo ""
     echo -e "Usage: $0 name [opts]"
     echo -e "\t-h for help message and options."
+    echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup."
     echo ""
 }
 
@@ -62,7 +63,8 @@ conda install -y numpy \
     networkx \
     matplotlib \
     seaborn \
-    jupyter
+    jupyter \
+    nltk
 
 conda install -y -c conda-forge jupyter_contrib_nbextensions \
     gitpython
