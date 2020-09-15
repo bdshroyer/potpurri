@@ -10,7 +10,7 @@ usage() {
 }
 
 # Option parsing
-while getopts ":hp:" opt; do
+while getopts ":hpd:" opt; do
     case $opt in
         h)
             # Help command
@@ -21,6 +21,8 @@ while getopts ":hp:" opt; do
             # Python version
             PY_ENV=$OPTARG
             ;;
+        d)
+            DEEP_LEARNING=1
         \?)
             # Invalid option
             echo ""
@@ -66,10 +68,19 @@ conda install -y numpy \
     jupyter \
     nltk
 
+echo "Installing/upgrading conda-forge packages in environment $ENV_NAME..."
+
 conda install -y -c conda-forge jupyter_contrib_nbextensions \
     gitpython
 
 jupyter contrib nbextension install --user
 
+if [[ $DEEP_LEARNING -eq 1]]; then
+    echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
+    conda install -y tensorflow \
+        keras
+
+    pip install trax
+fi
 
 echo "Installation/upgrade for environment $ENV_NAME complete."
