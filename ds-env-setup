@@ -10,7 +10,7 @@ usage() {
 }
 
 # Option parsing
-while getopts ":hpd:" opt; do
+while getopts ":hdp:" opt; do
     case $opt in
         h)
             # Help command
@@ -23,6 +23,7 @@ while getopts ":hpd:" opt; do
             ;;
         d)
             DEEP_LEARNING=1
+            ;;
         \?)
             # Invalid option
             echo ""
@@ -35,6 +36,7 @@ done
 shift $((OPTIND -1))
 
 ENV_NAME=$1
+
 CONDA_BASE=$(conda info --base)
 
 # If an environment exists under the given name, then skip the creation process.
@@ -75,7 +77,7 @@ conda install -y -c conda-forge jupyter_contrib_nbextensions \
 
 jupyter contrib nbextension install --user
 
-if [[ $DEEP_LEARNING -eq 1]]; then
+if [[ $DEEP_LEARNING -eq 1 ]]; then
     echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
     conda install -y tensorflow \
         keras
