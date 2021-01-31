@@ -35,7 +35,7 @@ if args['install_only'] and args['update_only']:
     exit(1)
 
 # Read in yaml file.
-args['file'] = args['file'] or os.path.join(os.getenv('HOME'), '.vim', 'pkg-config.yml')
+args['file'] = args.get('file') or os.path.join(os.getenv('HOME'), '.vim', 'pkg-config.yml')
 
 with open(args['file'], 'r') as f:
     try:
@@ -44,9 +44,8 @@ with open(args['file'], 'r') as f:
         print(e)
 
 
-config['package_root'] = config['package_root'] or os.path.join(os.getenv('HOME'), '.vim', 'pack', 'default', 'start')
+config['package_root'] = config.get('package_root') or os.path.join(os.getenv('HOME'), '.vim', 'pack', 'default', 'start')
 
-# If strict updating is used, remove any existing packages that are not specified in the manifest.
 if args['strict']:
     for pkg in legacy_packages(config):
         print(f"Removing legacy package {pkg}...", end='')
