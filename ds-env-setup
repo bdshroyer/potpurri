@@ -72,8 +72,10 @@ conda install -y numpy \
 
 echo "Installing/upgrading conda-forge packages in environment $ENV_NAME..."
 
-conda install -y -c conda-forge jupyter_contrib_nbextensions \
-    gitpython
+conda install -y -c conda-forge \
+    jupyter_contrib_nbextensions \
+    gitpython \
+    xgboost
 
 jupyter contrib nbextension install --user
 
