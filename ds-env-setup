@@ -90,6 +90,7 @@ if [[ $DEEP_LEARNING -eq 1 ]]; then
         keras
 
     pip install -U \
+        tensorflow-transform \
         tensorflow-data-validation \
         trax
 fi
