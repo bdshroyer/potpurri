@@ -92,6 +92,7 @@ if [[ $DEEP_LEARNING -eq 1 ]]; then
     pip install -U \
         tensorflow-transform \
         tensorflow-data-validation \
+        tfx \
         trax
 fi
 
