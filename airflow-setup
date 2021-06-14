@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+# Sanest default I could find since pip search is disabled.
+AIRFLOW_VERSION=2.1.0
+
+usage() {
+    echo ""
+    echo -e "Usage: $0 [opts]"
+    echo -e "\t-h for help message and options."
+    echo -e "\t-v=AIRFLOW_VERSION sets the Airflow version to install. Current default is 2.1.0."
+    echo ""
+}
+
+while getopts ":hv:" opt; do
+    case $opt in
+        h)
+            # Help command
+            usage
+            exit 0
+            ;;
+        v)
+            echo "Overriding Airflow version ${AIRFLOW_VERSION}..."
+            AIRFLOW_VERSION=$OPTARG
+            ;;
+        \?)
+            # Invalid option
+            echo ""
+            echo "ERROR: Invalid option."
+            usage
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+PYTHON_MINOR=$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)
+
+echo "AIRFLOW_VERSION = ${AIRFLOW_VERSION}"
+echo "PYTHON_MINOR = ${PYTHON_MINOR}"
+
+echo "Installing Airflow..."
+
+pip install -U apache-airflow --constraint="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_MINOR}.txt"
