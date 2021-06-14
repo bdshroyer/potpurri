@@ -6,12 +6,16 @@ usage() {
     echo -e "Usage: $0 name [opts]"
     echo -e "\t-h for help message and options."
     echo -e "\t-d to install deep learning libraries (Tensorflow, Jax, Trax)."
-    echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup."
+    echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup. Defaults to system version."
+    echo -e "\t-n=ENV_NAME: Sets name of virtual environment. Defaults to Python version."
     echo ""
 }
 
+# Set default python environment to be that of base system.
+PY_ENV=$(python --version | cut -d " " -f 2)
+
 # Option parsing
-while getopts ":hdp:" opt; do
+while getopts ":hdn:p:" opt; do
     case $opt in
         h)
             # Help command
@@ -19,11 +23,16 @@ while getopts ":hdp:" opt; do
             exit 0
             ;;
         p)
+            echo "Overriding Python version ${PY_ENV}..."
             # Python version
             PY_ENV=$OPTARG
             ;;
         d)
             DEEP_LEARNING=1
+            ;;
+        n)
+            echo "Overriding default environment name..."
+            ENV_NAME=$OPTARG
             ;;
         \?)
             # Invalid option
@@ -36,9 +45,15 @@ while getopts ":hdp:" opt; do
 done
 shift $((OPTIND -1))
 
-ENV_NAME=$1
+# Set default environment name to name of Python environment.
+if [ -z $ENV_NAME ]; then
+    ENV_NAME=$PY_ENV
+fi
 
 CONDA_BASE=$(conda info --base)
+
+echo "Conda base..."
+echo $CONDA_BASE
 
 # If an environment exists under the given name, then skip the creation process.
 # I chose to do this so that this script could be extended without having to
