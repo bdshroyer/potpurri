@@ -15,7 +15,7 @@ usage() {
 PY_ENV=$(python --version | cut -d " " -f 2)
 
 # Option parsing
-while getopts ":hdn:p:" opt; do
+while getopts ":hdn:l:p:" opt; do
     case $opt in
         h)
             # Help command
@@ -29,6 +29,9 @@ while getopts ":hdn:p:" opt; do
             ;;
         d)
             DEEP_LEARNING=1
+            ;;
+        l)
+            LOCAL_REPO=$OPTARG
             ;;
         n)
             echo "Overriding default environment name..."
@@ -110,5 +113,13 @@ if [[ $DEEP_LEARNING -eq 1 ]]; then
         tfx \
         trax
 fi
+
+
+
+if [[ -n "$LOCAL_REPO" ]]; then
+    echo "Installing editable local repo ${LOCAL_REPO}..."
+    pip install -e $LOCAL_REPO
+fi
+
 
 echo "Installation/upgrade for environment $ENV_NAME complete."
