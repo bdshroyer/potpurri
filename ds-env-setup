@@ -110,14 +110,15 @@ pip install -U pip
 
 if [[ $DEEP_LEARNING -eq 1 ]]; then
     echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
-    conda install -y tensorflow \
-        keras
+    #conda install -y -c conda-forge tensorflow
 
     pip install -U \
+        tensorflow \
         tensorflow-transform \
         tensorflow-data-validation \
         tfx \
-        trax
+        tensorflow-model-analysis \
+        keras-tuner
 fi
 
 
