@@ -6,6 +6,8 @@ usage() {
     echo -e "Usage: $0 name [opts]"
     echo -e "\t-h for help message and options."
     echo -e "\t-d to install deep learning libraries (Tensorflow, Jax, Trax)."
+    echo -e "\t-m to enable AMD GPU use on a MacBook. (does nothing if -d is not set)"
+    echo -e "\t-a to install Apache Airflow and related tooling."
     echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup. Defaults to system version."
     echo -e "\t-n=ENV_NAME: Sets name of virtual environment. Defaults to Python version."
     echo ""
@@ -15,7 +17,7 @@ usage() {
 PY_ENV=$(python --version | cut -d " " -f 2)
 
 # Option parsing
-while getopts ":hdn:l:p:" opt; do
+while getopts ":hdman:l:p:" opt; do
     case $opt in
         h)
             # Help command
@@ -29,6 +31,12 @@ while getopts ":hdn:l:p:" opt; do
             ;;
         d)
             DEEP_LEARNING=1
+            ;;
+        m)
+            ENABLE_MACBOOK_GPU=1
+            ;;
+        a)
+            AIRFLOW=1
             ;;
         l)
             LOCAL_REPO=$OPTARG
@@ -110,18 +118,30 @@ pip install -U pip
 
 if [[ $DEEP_LEARNING -eq 1 ]]; then
     echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
-    #conda install -y -c conda-forge tensorflow
 
     pip install -U \
         tensorflow \
+        keras-tuner
+
+    # Install the Pluggable device options required to enable GPU usage on a (non-M1) MacBook Pro.
+    if [[ $ENABLE_MACBOOK_GPU -eq 1 ]]; then
+        pip install -U \
+            tensorflow-macos \
+            tensorflow-metal
+    fi
+
+    # Split call, because auxiliary tensorflow tooling barfs often
+    pip install -U \
         tensorflow-transform \
         tensorflow-data-validation \
         tfx \
-        tensorflow-model-analysis \
-        keras-tuner
+        tensorflow-model-analysis
 fi
 
-
+if [[ $AIRFLOW -eq 1 ]]; then
+    echo "Installing/upgrading Apache Airflow in environment $ENV_NAME..."
+    pip install -U apache-airflow
+fi
 
 if [[ -n "$LOCAL_REPO" ]]; then
     echo "Installing editable local repo ${LOCAL_REPO}..."
