@@ -64,12 +64,12 @@ for package_url in config['packages']:
         if not args['install_only']:
             old_commit = repo.head.commit
 
-            print("Refreshing package '{}'...".format(package_name), end='')
+            print("Refreshing package '{}'...".format(package_name.strip()), end='')
             repo.remotes.origin.pull()
             print("done.".format(package_name))
 
             if repo.head.commit != old_commit:
-                print("\tChanges pulled.")
+                print(f"\tChanges pulled: {repo.head.commit.message}.")
 
         else:
             print("Install-only mode. Skipping {}.".format(package_name))
