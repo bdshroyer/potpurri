@@ -107,7 +107,9 @@ conda install -y -c conda-forge \
     gitpython \
     xgboost \
     schema \
-    yaml
+    yaml \
+    feature_engine \
+    shap
 
 jupyter contrib nbextension install --user
 
