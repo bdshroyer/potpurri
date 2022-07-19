@@ -105,7 +105,7 @@ echo "Installing/upgrading conda-forge packages in environment $ENV_NAME..."
 conda install -y -c conda-forge \
     jupyter_contrib_nbextensions \
     gitpython \
-    xgboost \
+    py-xgboost \
     schema \
     yaml \
     feature_engine \
