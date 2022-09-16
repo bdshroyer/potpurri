@@ -97,7 +97,6 @@ conda install -y \
     seaborn \
     jupyter \
     nltk \
-    geopandas \
     pytest \
     scikit-learn-intelex
 
