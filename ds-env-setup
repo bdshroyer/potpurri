@@ -7,6 +7,7 @@ usage() {
     echo -e "\t-h for help message and options."
     echo -e "\t-d to install deep learning libraries (Tensorflow, Jax, Trax)."
     echo -e "\t-m to enable AMD GPU use on a MacBook. (does nothing if -d is not set)"
+    echo -e "\t-g to set up geospatial analysis libraries"
     echo -e "\t-a to install Apache Airflow and related tooling."
     echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup. Defaults to system version."
     echo -e "\t-n=ENV_NAME: Sets name of virtual environment. Defaults to Python version."
@@ -17,7 +18,7 @@ usage() {
 PY_ENV=$(python --version | cut -d " " -f 2)
 
 # Option parsing
-while getopts ":hdman:l:p:" opt; do
+while getopts ":hdgman:l:p:" opt; do
     case $opt in
         h)
             # Help command
@@ -34,6 +35,9 @@ while getopts ":hdman:l:p:" opt; do
             ;;
         m)
             ENABLE_MACBOOK_GPU=1
+            ;;
+        g)
+            SET_UP_GEO=1
             ;;
         a)
             AIRFLOW=1
@@ -109,14 +113,22 @@ conda install -y -c conda-forge \
     schema \
     yaml \
     feature_engine \
+    sweetviz \
     shap
 
 jupyter contrib nbextension install --user
 
-
 echo "Upgrading pip..."
 
 pip install -U pip
+
+if [[ $SET_UP_GEO -eq 1 ]]; then
+    echo "Installing/upgrading geospatial analysis libraries..."
+    pip install -U \
+        geopy \
+        folium \
+        geopandas
+fi
 
 if [[ $DEEP_LEARNING -eq 1 ]]; then
     echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
