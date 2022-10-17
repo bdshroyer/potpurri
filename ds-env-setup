@@ -8,6 +8,7 @@ usage() {
     echo -e "\t-d to install deep learning libraries (Tensorflow, Jax, Trax)."
     echo -e "\t-m to enable AMD GPU use on a MacBook. (does nothing if -d is not set)"
     echo -e "\t-g to set up geospatial analysis libraries"
+    echo -e "\t-x to set up TFX, Tensorflow MLOps libraries (not recommended if AMD GPUs are enabled)"
     echo -e "\t-a to install Apache Airflow and related tooling."
     echo -e "\t-p=PY_VERSION: use Python version PY_VERSION during setup. Defaults to system version."
     echo -e "\t-n=ENV_NAME: Sets name of virtual environment. Defaults to Python version."
@@ -18,7 +19,7 @@ usage() {
 PY_ENV=$(python --version | cut -d " " -f 2)
 
 # Option parsing
-while getopts ":hdgman:l:p:" opt; do
+while getopts ":hdgxman:l:p:" opt; do
     case $opt in
         h)
             # Help command
@@ -38,6 +39,9 @@ while getopts ":hdgman:l:p:" opt; do
             ;;
         g)
             SET_UP_GEO=1
+            ;;
+        x)
+            TFX_ENABLED=1
             ;;
         a)
             AIRFLOW=1
@@ -133,23 +137,25 @@ fi
 if [[ $DEEP_LEARNING -eq 1 ]]; then
     echo "Installing/upgrading deep learning packages in environment $ENV_NAME..."
 
-    pip install -U \
-        tensorflow \
-        keras-tuner
-
     # Install the Pluggable device options required to enable GPU usage on a (non-M1) MacBook Pro.
     if [[ $ENABLE_MACBOOK_GPU -eq 1 ]]; then
         pip install -U \
             tensorflow-macos \
             tensorflow-metal
+    else
+        pip install -U tensorflow
     fi
 
     # Split call, because auxiliary tensorflow tooling barfs often
-    pip install -U \
-        tensorflow-transform \
-        tensorflow-data-validation \
-        tfx \
-        tensorflow-model-analysis
+    pip install -U keras-tuner
+
+    if [[ $ENABLE_TFX -eq 1 ]]; then
+        pip install -U \
+            tensorflow-transform \
+            tensorflow-data-validation \
+            tfx \
+            tensorflow-model-analysis
+    fi
 fi
 
 if [[ $AIRFLOW -eq 1 ]]; then
