@@ -56,6 +56,10 @@ def find_repo(package_url: str, package_root: str, update_only: bool = False) ->
 
 
 def main():
+    """
+    Main control flow of script. Invoked below.
+    """
+
     # Assemble argument parser
     parser = ArgumentParser(description='Manage VIM packages using vim 8 native package manager')
     parser.add_argument("-f", "--file", type=str, help="config file location")
@@ -82,6 +86,7 @@ def main():
 
     config['package_root'] = config.get('package_root') or os.path.join(os.getenv('HOME'), '.vim', 'pack', 'default', 'start')
 
+    # If strict mode is set, then remove any packages not specified in the package configuration file.
     if args['strict']:
         for pkg in legacy_packages(config):
             print(f"Removing legacy package {pkg}...", end='')
@@ -89,10 +94,14 @@ def main():
             print("done.")
 
     print("")
+
+    # Fetch and update packages specified in config file.
     for package_url in config['packages']:
         package_name = package_url.split('/')[-1]
         repo = find_repo(package_url, config['package_root'], args['update_only'])
 
+        # If the repo is null, then the repo either wasn't present or wasn't readable as a Git repo,
+        # and this script was running in update-only mode. Either way, skip the next step.
         if repo is None:
             continue
 
