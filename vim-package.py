@@ -20,6 +20,41 @@ def legacy_packages(config):
     return list(have_packages.difference(keep_packages))
 
 
+def find_repo(package_url: str, package_root: str, update_only: bool = False) -> Repo:
+    """
+    Attempts to construct a Repo object from the given package directory. If it encounters
+    an exception, it will either attempt to clone the repo or simply return None, depending
+    on the `update_only` flag.
+
+    Inputs:
+        * A string containing the package's URL.
+        * A cdi
+        * A boolean flag indicating whether to run in update-only mode..
+    Outputs:
+        * A Repo object, or None on an exception thrown in update-only mode.
+    """
+    repo = None
+
+    package_name = package_url.split('/')[-1]
+    package_dir = os.path.join(package_root, package_name)
+
+    try:
+        repo = Repo(package_dir)
+
+    except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError) as e:
+        print(type(e))
+
+        if update_only:
+            print("Update-only mode. Skipping {}.".format(package_name))
+        else:
+            print("Repo not found. Cloning repo...", end='')
+            repo = Repo.clone_from(package_url, package_dir)
+            print("done.")
+
+    return repo
+
+
+
 def main():
     # Assemble argument parser
     parser = ArgumentParser(description='Manage VIM packages using vim 8 native package manager')
@@ -56,32 +91,23 @@ def main():
     print("")
     for package_url in config['packages']:
         package_name = package_url.split('/')[-1]
-        package_dir = os.path.join(config['package_root'], package_name)
+        repo = find_repo(package_url, config['package_root'], args['update_only'])
 
-        try:
-            repo = Repo(package_dir)
+        if repo is None:
+            continue
 
-            if not args['install_only']:
-                old_commit = repo.head.commit
+        if not args['install_only']:
+            old_commit = repo.head.commit
 
-                print("Refreshing package '{}'...".format(package_name.strip()), end='')
-                repo.remotes.origin.pull()
-                print("done.".format(package_name))
+            print("Refreshing package '{}'...".format(package_name.strip()), end='')
+            repo.remotes.origin.pull()
+            print("done.".format(package_name))
 
-                if repo.head.commit != old_commit:
-                    print(f"\tChanges pulled: {repo.head.commit.message}.")
+            if repo.head.commit != old_commit:
+                print(f"\tChanges pulled: {repo.head.commit.message}.")
 
-            else:
-                print("Install-only mode. Skipping {}.".format(package_name))
-
-        except (git.exc.NoSuchPathError, git.exc.InvalidGitRepositoryError) as e:
-            print(e)
-            if not args['update_only']:
-                print("Repo not found. Cloning repo...")
-                Repo.clone_from(package_url, package_dir)
-                print("{} installed.".format(package_name))
-            else:
-                print("Update-only mode. Skipping {}.".format(package_name))
+        else:
+            print("Install-only mode. Skipping {}.".format(package_name))
 
     print("\nPackage update done.")
 
