@@ -28,7 +28,7 @@ def find_repo(package_url: str, package_root: str, update_only: bool = False) ->
 
     Inputs:
         * A string containing the package's URL.
-        * A cdi
+        * A string containing the root path for the package.
         * A boolean flag indicating whether to run in update-only mode..
     Outputs:
         * A Repo object, or None on an exception thrown in update-only mode.
